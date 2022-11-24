@@ -15,7 +15,7 @@ mydb = mysql.connector.connect(
 )
 dbcursor = mydb.cursor()
 win = Tk()
-
+isLoged = False
 
 mydb.commit()
 def Center():
@@ -30,20 +30,28 @@ def Center():
     y = win.winfo_screenheight() // 2 - win_height // 2
     win.geometry('{}x{}+{}+{}'.format(width, height, x, y))
     win.deiconify()
+def RegisterWindow():
 
 def LoginValidator():
     from tkinter import messagebox
     from tkinter.ttk import Combobox
+    global isLoged
     login = username_login_entry.get()
     passw = password__login_entry.get()
-    dbcursor.execute("SELECT Login, Passw FROM user")
     dbcursor.execute("SELECT Login, Passw, UserID FROM user")
     dbresult = dbcursor.fetchall()
     for x in dbresult:
         Login = x[0]
         Passw = x[1]
         userID = x[2]
-        if Login == login and Passw == passw:
+        if passw == "":
+            messagebox.showerror("Error","Enter Password!")
+            break;
+        elif login == "":
+            messagebox.showerror("Error","Enter Username!")
+            break;
+        elif Login == login and Passw == passw:
+            loginFrame.destroy()
             global userLoged
             userLoged = User(Login, Passw, userID, dbcursor, mydb)
             userLoged.ListAccounts()
@@ -68,13 +76,10 @@ def LoginValidator():
 
             btn = ttk.Button(win, text ="Create Transaction", command = testbutton)
             btn.grid(row = 1, column = 1)
-
-        elif passw == "":
-            messagebox.showerror("Error","Enter Password!")
-        elif login == "":
-            messagebox.showerror("Error","Enter Username!")
-        else:
-            messagebox.showerror("Error","Wrong username or/and password!")
+            isLoged = True
+            break;
+    if isLoged == False:
+        messagebox.showerror("Error","Wrong username or/and password!")
 
 def toggle_fullscreen(event=None):
     win.attributes("-fullscreen", True)
@@ -99,32 +104,34 @@ def funny(a):
 win.geometry("200x200+-1+0")
 win.bind("<Tab>", toggle_fullscreen)
 win.bind("<Escape>", end_fullscreen)
+loginFrame = Frame(win)
+loginFrame.pack()
 
-labelTitle = Label(win, text="Please enter login details")
+labelTitle = Label(loginFrame, text="Please enter login details")
 labelTitle.pack()
 
-labelSpace1 = Label(win, text="")
+labelSpace1 = Label(loginFrame, text="")
 labelSpace1.pack()
 
-labelUsername = Label(win, text="Username")
+labelUsername = Label(loginFrame, text="Username")
 labelUsername.pack()
 
-username_login_entry = Entry(win, textvariable="username")
+username_login_entry = Entry(loginFrame, textvariable="username")
 username_login_entry.pack()
 
-labelSpace2 = Label(win, text="")
+labelSpace2 = Label(loginFrame, text="")
 labelSpace2.pack()
 
-labelPassword = Label(win, text="Password")
+labelPassword = Label(loginFrame, text="Password")
 labelPassword.pack()
 
-password__login_entry = Entry(win, textvariable="password", show= '*')
+password__login_entry = Entry(loginFrame, textvariable="password", show= '*')
 password__login_entry.pack()
 
-labelSpace3 = Label(win, text="")
+labelSpace3 = Label(loginFrame, text="")
 labelSpace3.pack()
 
-buttonLogin = Button(win, text="Login", width=10, height=1, command = LoginValidator)
+buttonLogin = Button(loginFrame, text="Login", width=10, height=1, command = LoginValidator)
 buttonLogin.pack()
 Center()
 
