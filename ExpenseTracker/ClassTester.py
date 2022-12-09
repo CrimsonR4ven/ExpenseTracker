@@ -3,19 +3,22 @@ from tkinter import ttk
 from Objects.Transaction import *
 from Objects.Account import *
 from Objects.User import *
+from Objects.LoginWindow import *
 from TransactionService import *
 import mysql.connector
 import datetime
+from PIL import ImageTk, Image
 #DB connection
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  password="Kacper2005$",
+  password="",
   database="tracker"
 )
 dbcursor = mydb.cursor()
 win = Tk()
 isLoged = False
+backgroundImg = ImageTk.PhotoImage(Image.open("./Images/LoginBackground.jpeg"))
 
 mydb.commit()
 def Center():
@@ -31,6 +34,7 @@ def Center():
     win.geometry('{}x{}+{}+{}'.format(width, height, x, y))
     win.deiconify()
 def RegisterWindow():
+    pass
 
 def LoginValidator():
     from tkinter import messagebox
@@ -104,7 +108,9 @@ def funny(a):
 win.geometry("200x200+-1+0")
 win.bind("<Tab>", toggle_fullscreen)
 win.bind("<Escape>", end_fullscreen)
-loginFrame = Frame(win)
+loginWin = LoginWindow(win, dbcursor, 5, mydb)
+loginWin.LoginWindowGenerate()
+""" loginFrame = Frame(win)
 loginFrame.pack()
 
 labelTitle = Label(loginFrame, text="Please enter login details")
@@ -132,7 +138,7 @@ labelSpace3 = Label(loginFrame, text="")
 labelSpace3.pack()
 
 buttonLogin = Button(loginFrame, text="Login", width=10, height=1, command = LoginValidator)
-buttonLogin.pack()
+buttonLogin.pack() """
 Center()
 
 # To do list:
