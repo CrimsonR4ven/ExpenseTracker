@@ -7,6 +7,7 @@ class User:
         self.DBcursor = dbcursor
         self.Accounts = []
         self.mydb = mydb
+        self.ListAccounts()
     def ListAccounts(self):
         self.DBcursor.execute('SELECT Title, Money, Description, AccountID FROM account INNER JOIN user ON account.UserID = user.UserID WHERE user.UserID = \'%s\';' % (self.UserID))
         dbresult = self.DBcursor.fetchall()

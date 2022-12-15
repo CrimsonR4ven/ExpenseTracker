@@ -1,0 +1,6 @@
+from tkinter import *
+from tkinter import ttk
+from tkinter.ttk import Combobox
+class AppWindow:
+    def __init__(self, win, dbcursor, accountUsed, mydb):
+        
