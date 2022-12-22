@@ -1,14 +1,14 @@
 from tkinter import *
 from tkinter import ttk
-from Objects.Transaction import *
-from Objects.Account import *
-from Objects.User import *
-from Objects.LoginWindow import *
+import Objects
 from TransactionService import *
+from PIL import ImageTk, Image
+
+import time
+import threading
 import mysql.connector
 import datetime
-from PIL import ImageTk, Image
-#DB connection
+
 mydb = mysql.connector.connect(
   host="localhost",
   port="3307",
@@ -17,13 +17,12 @@ mydb = mysql.connector.connect(
   database="tracker"
 )
 dbcursor = mydb.cursor()
+
 win = Tk()
 
 photo = ImageTk.PhotoImage(Image.open('./Images/Raven.png'))
 win.wm_iconphoto(True, photo)
-isLoged = False
-backgroundImg = ImageTk.PhotoImage(Image.open("./Images/LoginBackground.jpeg"))
-mydb.commit()
+
 def Center():
     win.update_idletasks()
     width = win.winfo_width()
@@ -78,16 +77,23 @@ def testbutton():
 
 def funny(a):
     print(a.TimeFormat + " " + a.Title + " " + a.Amount + "$")
-win.configure(background="#000000")
+
+def catchLogInThread():
+    while(not loginWin.IsLoged):
+        time.sleep(0)
+    global appVar
+    appVar = Objects.AppWindow(win,dbcursor,Objects.User(loginWin.Login, loginWin.Passw, loginWin.UserID, dbcursor, mydb))
+    appVar.GenerateMainWindow()
+
+win.configure(background="#ffffff")
 win.geometry("1300x750+-1+0")
 win.resizable(0, 0)
 win.bind("<Tab>", toggle_fullscreen)
 win.bind("<Escape>", end_fullscreen)
-
-loginWin = LoginWindow(win, dbcursor)
+x = threading.Thread(target=catchLogInThread)
+loginWin = Objects.LoginWindow(win, dbcursor)
+x.start()
 loginWin.LoginWindowGenerate()
-
-Center()
 
 # To do list:
 

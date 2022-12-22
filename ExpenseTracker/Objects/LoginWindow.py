@@ -5,6 +5,9 @@ from PIL import ImageTk, Image
 class LoginWindow:
     def __init__(self, win, dbcursor):
         self.win = win
+        self.IsLoged = False
+        self.showImage = ImageTk.PhotoImage(Image.open('./Images/show.png'))
+        self.hideImage = ImageTk.PhotoImage(Image.open('./Images/hide.png'))
         #Background
         backgroundImg = ImageTk.PhotoImage(Image.open("./Images/LoginBackground.jpg").resize((1300,750),Image.ANTIALIAS))
 
@@ -41,6 +44,9 @@ class LoginWindow:
 
         self.loginPasswordEntry = Entry(self.loginPasswordEntryFrame, highlightthickness=0, relief=FLAT, textvariable="password", show= '*', background="#3b3b3b", foreground="#ffffff")
 
+        self.loginShowButton = Button(self.loginPasswordEntryFrame, image=self.showImage, command=self.LoginHide, relief=FLAT, highlightthickness=0, activebackground="white", borderwidth=0, background="#3b3b3b", cursor="hand2")
+        self.loginHideButton = Button(self.loginPasswordEntryFrame, image=self.hideImage, command=self.LoginShow, relief=FLAT, highlightthickness=0, activebackground="white", borderwidth=0, background="#3b3b3b", cursor="hand2")
+
         self.loginPasswordLine = Canvas(self.loginFrame, width=170, height=1.0, bg="#bdb9b1", highlightthickness=0)
 
         self.labelSpace3 = Label(self.loginFrame, text="", background="#3b3b3b")
@@ -71,7 +77,14 @@ class LoginWindow:
         self.registerButtonLogin = Button(self.registerFrame, text="Login", width=10, height=1, command = self.LoginWindowGenerate)
 
         #Weight
-
+    def LoginShow(self):
+        self.loginHideButton.pack_forget()
+        self.loginShowButton.pack(side=LEFT)
+        self.loginPasswordEntry.config(show='*')
+    def LoginHide(self):
+        self.loginShowButton.pack_forget()
+        self.loginHideButton.pack(side=LEFT)
+        self.loginPasswordEntry.config(show='')
     def LoginReturn(self):
         login = self.usernameLoginEntry.get()
         passw = self.passwordLoginEntry.get()
@@ -83,15 +96,6 @@ class LoginWindow:
             userID = x[2]
             if Login == login and Passw == passw:
                 self.User = x
-    def __DestroyLoginWindow(self):
-        self.LoginFrame.destroy()
-        pass
-    def __RegisterWindow(self):
-        pass
-    def __DestroyRegisterWindow(self):
-        pass
-    def GetUser(self):
-        return self.User
     def LoginWindowGenerate(self):
         try:
             self.Canvas.delete(self.RegisterWindow)
@@ -108,6 +112,7 @@ class LoginWindow:
         self.loginPasswordEntryFrame.pack()
         self.password_icon_label.pack(side=LEFT)
         self.loginPasswordEntry.pack(side=LEFT)
+        self.loginShowButton.pack(side=LEFT)
         self.loginPasswordLine.pack(pady=2)
         self.labelSpace3.pack()
         self.loginButtonValidate.pack()
@@ -128,7 +133,6 @@ class LoginWindow:
 
     def LoginValidate(self):
         from tkinter import messagebox
-        from tkinter.ttk import Combobox
         global isLoged
         login = self.loginUsernameEntry.get()
         passw = self.loginPasswordEntry.get()
@@ -152,5 +156,7 @@ class LoginWindow:
                     self.Login = Login
                     self.Passw = Passw
                     self.UserID = UserID
+                    self.IsLoged = True
+                    self.Canvas.pack_forget()
             except:
                 messagebox.showerror("Error","Wrong username or/and password!")
