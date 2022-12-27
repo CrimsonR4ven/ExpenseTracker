@@ -9,18 +9,24 @@ import threading
 import mysql.connector
 import datetime
 
-mydb = mysql.connector.connect(
-  host="localhost",
-  port="3307",
-  user="root",
-  password="",
-  database="tracker"
-)
-dbcursor = mydb.cursor()
+try:
+    mydb = mysql.connector.connect(
+    host="sql7.freesqldatabase.com",
+    port="3306",
+    user="sql7586811",
+    password="caaxv2mJum",
+    database="sql7586811"
+    )
+    dbcursor = mydb.cursor()
+    NoConnection = False
+except:
+    dbcursor = False
+    NoConnection = True
+
 
 win = Tk()
 
-photo = ImageTk.PhotoImage(Image.open('./Images/Raven.png'))
+photo = ImageTk.PhotoImage(Image.open('./ExpenseTracker/Images/Raven.png'))
 win.wm_iconphoto(True, photo)
 
 def Center():
@@ -33,36 +39,17 @@ def Center():
     win_height = height + titlebar_height + frm_width
     x = win.winfo_screenwidth() // 2 - win_width // 2
     y = win.winfo_screenheight() // 2 - win_height // 2
-    win.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+    win.geometry('{}x{}+{}+{}'.format(width, height, x, y - int(y/3)))
     win.deiconify()
-""" def RegisterWindow():
-    win.geometry("1200x600")
-    Center()
-    win.attributes("-fullscreen", True)
 
-    label = ttk.Label(win, text="Da tracker", font=("Courier 22"))
-    label.grid(row = 0, column = 0)
+#To tak na przyszłość, kiedyś się tego użyje
+#po co? bo fajne
 
-    label2 = ttk.Label(win, text="ye", font=("Courier 22"))
-    label2.grid(row = 1, column = 0)
-    global accountList
-    accountList = []
-    
-    for x in .Accounts:
-        accountList.append(x.Title)
-    global comboboxAccounts
-    comboboxAccounts = Combobox(win, values = accountList)
-    comboboxAccounts.grid(row = 2, column = 1)
+#def toggle_fullscreen(event=None):
+#    win.attributes("-fullscreen", True)
 
-    btn = ttk.Button(win, text ="Create Transaction", command = testbutton)
-    btn.grid(row = 1, column = 1)
-    isLoged = True """
-
-def toggle_fullscreen(event=None):
-    win.attributes("-fullscreen", True)
-
-def end_fullscreen(event=None):
-    win.attributes("-fullscreen", False)
+#def end_fullscreen(event=None):
+#    win.attributes("-fullscreen", False)
 
 def testbutton():
     accountUsed = comboboxAccounts.get()
@@ -84,28 +71,35 @@ def catchLogInThread():
     global appVar
     appVar = Objects.AppWindow(win,dbcursor,Objects.User(loginWin.Login, loginWin.Passw, loginWin.UserID, dbcursor, mydb))
     appVar.GenerateMainWindow()
+    Center()
 
 win.configure(background="#ffffff")
 win.geometry("1300x750+-1+0")
 win.resizable(0, 0)
-win.bind("<Tab>", toggle_fullscreen)
-win.bind("<Escape>", end_fullscreen)
+#win.bind("<Tab>", toggle_fullscreen)
+#win.bind("<Escape>", end_fullscreen)
 x = threading.Thread(target=catchLogInThread)
-loginWin = Objects.LoginWindow(win, dbcursor)
+loginWin = Objects.LoginWindow(win, dbcursor, NoConnection)
 x.start()
-loginWin.LoginWindowGenerate()
-
+if NoConnection == True:
+    loginWin.NoConnection()
+else:
+    loginWin.LoginWindowGenerate()
+Center()
 # To do list:
 
-# WYWAL LOGOWANIE/REJESTRACJE DO INNEGO PLIKU
-# Ikony i nazwy okienek
-# Wybrać paletę barw
+# WYWAL LOGOWANIE/REJESTRACJE DO INNEGO PLIKU - Done
+# Wybrać paletę barw - Done
+# Nałożyć design, zastosować obiekty frame - Done
+# Ikony i nazwy okienek - Done
+
 # Dodawanie Kont
+# Konto Normalne
+# Konto Stockowe
 # Konto oszczędnościowe (SQL POŁĄCZENIE Z account) (Klasa) (Obsługa w programie)
 # System akcji (Znajdź API) (Kup/Sprzedaj) (SQL POŁĄCZENIE Z account)
 # System modyfikacji Transakcji, kont i innych obiektów
-# Brzydki kod, popraw
-# Nałożyć design, zastosować obiekty frame
-# Napraw Połączenie z gitem
+
+# Brzydki kod, popraw - impossible 
 
 win.mainloop()

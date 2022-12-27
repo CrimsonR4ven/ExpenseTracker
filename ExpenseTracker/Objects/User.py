@@ -9,7 +9,7 @@ class User:
         self.mydb = mydb
         self.ListAccounts()
     def ListAccounts(self):
-        self.DBcursor.execute('SELECT Title, Money, Description, AccountID FROM account INNER JOIN user ON account.UserID = user.UserID WHERE user.UserID = \'%s\';' % (self.UserID))
+        self.DBcursor.execute('SELECT Title, Money, Description, AccountID, Type FROM account INNER JOIN user ON account.UserID = user.UserID WHERE user.UserID = \'%s\';' % (self.UserID))
         dbresult = self.DBcursor.fetchall()
         for x in dbresult:
             newAccount = Account(x[0], x[1], x[2], x[3], self.DBcursor, self.mydb)

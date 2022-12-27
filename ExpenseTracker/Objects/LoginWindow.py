@@ -3,13 +3,13 @@ from tkinter import ttk
 from tkinter.ttk import Combobox
 from PIL import ImageTk, Image
 class LoginWindow:
-    def __init__(self, win, dbcursor):
+    def __init__(self, win, dbcursor, Connection):
         self.win = win
         self.IsLoged = False
-        self.showImage = ImageTk.PhotoImage(Image.open('./Images/show.png'))
-        self.hideImage = ImageTk.PhotoImage(Image.open('./Images/hide.png'))
+        self.showImage = ImageTk.PhotoImage(Image.open('./ExpenseTracker/Images/show.png'))
+        self.hideImage = ImageTk.PhotoImage(Image.open('./ExpenseTracker/Images/hide.png'))
         #Background
-        backgroundImg = ImageTk.PhotoImage(Image.open("./Images/LoginBackground.jpg").resize((1300,750),Image.ANTIALIAS))
+        backgroundImg = ImageTk.PhotoImage(Image.open("./ExpenseTracker/Images/LoginBackground.jpg").resize((1300,750),Image.ANTIALIAS))
 
         self.Canvas = Canvas(self.win, width=1300, height=750, highlightthickness=0)
         self.Canvas.pack()
@@ -28,9 +28,17 @@ class LoginWindow:
 
         self.labelUsername = Label(self.loginFrame, text="Username", background="#3b3b3b", foreground="#ffffff")
 
-        self.loginUsernameEntry = Entry(self.loginFrame, highlightthickness=0, relief=FLAT, textvariable="username", background="#3b3b3b", foreground="#ffffff")
+        self.loginUsernameEntryFrame = Frame(self.loginFrame, background="#3b3b3b")
 
-        self.loginUsernameLine = Canvas(self.loginFrame, width=170, height=1.0, bg="#bdb9b1", highlightthickness=0)
+        usernameIcon = ImageTk.PhotoImage(Image.open('./ExpenseTracker/Images/username_icon.png'))
+        self.username_icon_label = Label(self.loginUsernameEntryFrame, image=usernameIcon, bg='#3b3b3b')
+        self.username_icon_label.image = usernameIcon
+
+        self.loginUsernameEntry = Entry(self.loginUsernameEntryFrame, highlightthickness=0, relief=FLAT, textvariable="username", background="#3b3b3b", foreground="#ffffff")
+
+        self.username_icon_label_space = Label(self.loginUsernameEntryFrame, width=2, bg='#3b3b3b')
+
+        self.loginUsernameLine = Canvas(self.loginFrame, width=185, height=1.0, bg="#bdb9b1", highlightthickness=0)
 
         self.labelSpace2 = Label(self.loginFrame, text="", background="#3b3b3b")
 
@@ -38,7 +46,7 @@ class LoginWindow:
 
         self.labelPassword = Label(self.loginFrame, text="Password", background="#3b3b3b", foreground="#ffffff")
 
-        passwordIcon = ImageTk.PhotoImage(Image.open('./Images/password_icon.png'))
+        passwordIcon = ImageTk.PhotoImage(Image.open('./ExpenseTracker/Images/password_icon.png'))
         self.password_icon_label = Label(self.loginPasswordEntryFrame, image=passwordIcon, bg='#3b3b3b')
         self.password_icon_label.image = passwordIcon
 
@@ -47,7 +55,7 @@ class LoginWindow:
         self.loginShowButton = Button(self.loginPasswordEntryFrame, image=self.showImage, command=self.LoginHide, relief=FLAT, highlightthickness=0, activebackground="white", borderwidth=0, background="#3b3b3b", cursor="hand2")
         self.loginHideButton = Button(self.loginPasswordEntryFrame, image=self.hideImage, command=self.LoginShow, relief=FLAT, highlightthickness=0, activebackground="white", borderwidth=0, background="#3b3b3b", cursor="hand2")
 
-        self.loginPasswordLine = Canvas(self.loginFrame, width=170, height=1.0, bg="#bdb9b1", highlightthickness=0)
+        self.loginPasswordLine = Canvas(self.loginFrame, width=185, height=1.0, bg="#bdb9b1", highlightthickness=0)
 
         self.labelSpace3 = Label(self.loginFrame, text="", background="#3b3b3b")
 
@@ -76,7 +84,10 @@ class LoginWindow:
         self.registerButtonValidate = Button(self.registerFrame, text="Register", width=10, height=1, command = self.LoginReturn)
         self.registerButtonLogin = Button(self.registerFrame, text="Login", width=10, height=1, command = self.LoginWindowGenerate)
 
-        #Weight
+        #No Conntection
+        self.nologinFrame = Frame(self.win, width=375, height=155, background="#3b3b3b")
+        self.nologinFrame.pack_propagate(0)
+        self.ConnectionLabel = Label(self.nologinFrame, background="#3b3b3b", foreground="#ffffff", font=('Colibri', 13), text="\nError, no connection with our database\nPossible reasons:\n- No internet connection\n- Database maintenance ")
     def LoginShow(self):
         self.loginHideButton.pack_forget()
         self.loginShowButton.pack(side=LEFT)
@@ -97,6 +108,7 @@ class LoginWindow:
             if Login == login and Passw == passw:
                 self.User = x
     def LoginWindowGenerate(self):
+        self.win.title("Login")
         try:
             self.Canvas.delete(self.RegisterWindow)
         except:
@@ -105,7 +117,10 @@ class LoginWindow:
         self.loginLabelTitle.pack()
         self.labelSpace1.pack()
         self.labelUsername.pack()
-        self.loginUsernameEntry.pack()
+        self.loginUsernameEntryFrame.pack()
+        self.username_icon_label.pack(side=LEFT)
+        self.loginUsernameEntry.pack(side=LEFT)
+        self.username_icon_label_space.pack(side=LEFT)
         self.loginUsernameLine.pack()
         self.labelSpace2.pack()
         self.labelPassword.pack()
@@ -118,6 +133,7 @@ class LoginWindow:
         self.loginButtonValidate.pack()
         self.loginButtonRegister.pack()
     def RegisterWindowGenerate(self):
+        self.win.title("Register")
         self.RegisterWindow = self.Canvas.create_window(650 - 375 / 2, 375 - 650 / 2, anchor=NW, window=self.registerFrame)
         self.Canvas.delete(self.LoginWindow)
         self.registerLabelTitle.pack()
@@ -130,7 +146,10 @@ class LoginWindow:
         self.registerLabelSpace3.pack()
         self.registerButtonValidate.pack()
         self.registerButtonLogin.pack()
-
+    def NoConnection(self):
+        self.win.title("No connection")
+        self.LoginWindow = self.Canvas.create_window(650 - 375 / 2, 375 - 180 / 2, anchor=NW, window=self.nologinFrame)
+        self.ConnectionLabel.pack()
     def LoginValidate(self):
         from tkinter import messagebox
         global isLoged
