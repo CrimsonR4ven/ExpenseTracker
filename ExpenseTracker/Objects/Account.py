@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 import json
 
 class Account:
@@ -57,9 +58,9 @@ class PresentBoxAccount:
             self.c.create_arc((2,2,152,152), fill="#7A0871", outline="#7A0871", start=self.prop(650), extent = self.prop(200))
             self.c.create_arc((2,2,152,152), fill="#294994", outline="#294994", start=self.prop(850), extent = self.prop(150))
         elif self.Account.Type == 2:
-            pass
+            self.progressbar = ttk.Progressbar(self.Frame, maximum = 100, length=280, variable = self.Account.Money / (self.Account.Goal / 100),  orient='horizontal', mode='determinate')
         elif self.Account.Type == 3:
-            pass
+            self.InWork = Label(self.Frame, text = "still working on balance presentation", background="#b3b3b3")
         self.AccountBalance = Label(self.Frame, text = f"Balance: {self.Account.Money} pln", background="#b3b3b3")
 
     def prop(self,n):
@@ -69,7 +70,11 @@ class PresentBoxAccount:
         self.Frame.place(x=60 * ((self.ID % 3) + 1) + 300 * (self.ID % 3), y=20 * (int(self.ID / 3) + 1) + 250 * int(self.ID / 3))
         self.AccountName.place(x=5, y=2)
         if   self.Account.Type == 1:
-            self.c.place(x=5, y=20)
+            self.c.place(x=5, y=20,)
+        elif self.Account.Type == 2:
+            self.progressbar.place(x=10,y=40)
+        elif self.Account.Type == 3:
+            self.InWork.place(x=10,y=40)
         self.AccountBalance.place(x=5, y=180)
 
     def pack_forget(self):
@@ -77,6 +82,10 @@ class PresentBoxAccount:
         self.AccountName.place_forget()
         if   self.Account.Type == 1:
             self.c.place_forget()
+        elif self.Account.Type == 2:
+            self.progressbar.place_forget()
+        elif self.Account.Type == 3:
+            self.InWork.place_forget()
         self.AccountBalance.place_forget()
 
 class AccountPresenter:

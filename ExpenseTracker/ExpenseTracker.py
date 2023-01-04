@@ -19,10 +19,10 @@ try:
     )
     dbcursor = mydb.cursor()
     NoConnection = False
+
 except:
     dbcursor = False
     NoConnection = True
-
 
 win = Tk()
 
@@ -76,30 +76,25 @@ def catchLogInThread():
 win.configure(background="#ffffff")
 win.geometry("1300x750+-1+0")
 win.resizable(0, 0)
+
 #win.bind("<Tab>", toggle_fullscreen)
 #win.bind("<Escape>", end_fullscreen)
+
 x = threading.Thread(target=catchLogInThread)
 loginWin = Objects.LoginWindow(win, dbcursor, mydb, NoConnection)
 x.start()
+
 if NoConnection == True:
     loginWin.NoConnection()
+
 else:
     loginWin.LoginWindowGenerate()
+
 Center()
 # To do list:
 
-# WYWAL LOGOWANIE/REJESTRACJE DO INNEGO PLIKU - Done
-# Wybrać paletę barw - Done
-# Nałożyć design, zastosować obiekty frame - Done
-# Ikony i nazwy okienek - Done
-
-# Dodawanie Kont
-# Konto Normalne
 # Konto Stockowe
-# Konto oszczędnościowe (SQL POŁĄCZENIE Z account) (Klasa) (Obsługa w programie)
 # System akcji (Znajdź API) (Kup/Sprzedaj) (SQL POŁĄCZENIE Z account)
 # System modyfikacji Transakcji, kont i innych obiektów
-
-# Brzydki kod, popraw - impossible 
 
 win.mainloop()
