@@ -69,7 +69,7 @@ def catchLogInThread():
     while(not loginWin.IsLoged):
         time.sleep(0)
     global appVar
-    appVar = Objects.AppWindow(win,dbcursor,Objects.User(loginWin.Login, loginWin.Passw, loginWin.UserID, dbcursor, mydb))
+    appVar = Objects.AppWindow(win, dbcursor, mydb, Objects.User(loginWin.Login, loginWin.Passw, loginWin.UserID, dbcursor, mydb))
     appVar.GenerateMainWindow()
     Center()
 
@@ -79,7 +79,7 @@ win.resizable(0, 0)
 #win.bind("<Tab>", toggle_fullscreen)
 #win.bind("<Escape>", end_fullscreen)
 x = threading.Thread(target=catchLogInThread)
-loginWin = Objects.LoginWindow(win, dbcursor, NoConnection)
+loginWin = Objects.LoginWindow(win, dbcursor, mydb, NoConnection)
 x.start()
 if NoConnection == True:
     loginWin.NoConnection()

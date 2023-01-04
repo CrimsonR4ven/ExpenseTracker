@@ -3,8 +3,9 @@ from tkinter import ttk
 from tkinter.ttk import Combobox
 from PIL import ImageTk, Image
 class LoginWindow:
-    def __init__(self, win, dbcursor, Connection):
+    def __init__(self, win, dbcursor, mydb, Connection):
         self.win = win
+        self.mydb = mydb
         self.IsLoged = False
         self.showImage = ImageTk.PhotoImage(Image.open('./ExpenseTracker/Images/show.png'))
         self.hideImage = ImageTk.PhotoImage(Image.open('./ExpenseTracker/Images/hide.png'))
@@ -22,11 +23,11 @@ class LoginWindow:
         self.loginFrame = Frame(self.win, width=375, height=650, background="#3b3b3b")
         self.loginFrame.pack_propagate(0)
 
-        self.loginLabelTitle = Label(self.loginFrame, text="Please enter login details", background="#3b3b3b", foreground="#ffffff")
+        self.loginLabelTitle = Label(self.loginFrame, text="Please enter login details", background="#3b3b3b", foreground="#ffffff", font=('Colibri', 15))
 
         self.labelSpace1 = Label(self.loginFrame, text="", background="#3b3b3b")
 
-        self.labelUsername = Label(self.loginFrame, text="Username", background="#3b3b3b", foreground="#ffffff")
+        self.labelUsername = Label(self.loginFrame, text="Username", background="#3b3b3b", foreground="#ffffff", font=('Colibri', 13))
 
         self.loginUsernameEntryFrame = Frame(self.loginFrame, background="#3b3b3b")
 
@@ -44,7 +45,7 @@ class LoginWindow:
 
         self.loginPasswordEntryFrame = Frame(self.loginFrame, background="#3b3b3b")
 
-        self.labelPassword = Label(self.loginFrame, text="Password", background="#3b3b3b", foreground="#ffffff")
+        self.labelPassword = Label(self.loginFrame, text="Password", background="#3b3b3b", foreground="#ffffff", font=('Colibri', 13))
 
         passwordIcon = ImageTk.PhotoImage(Image.open('./ExpenseTracker/Images/password_icon.png'))
         self.password_icon_label = Label(self.loginPasswordEntryFrame, image=passwordIcon, bg='#3b3b3b')
@@ -63,26 +64,33 @@ class LoginWindow:
         self.loginButtonRegister = Button(self.loginFrame, text="register", width=10, height=1, background="#3b3b3b", foreground="#ffffff", command = self.RegisterWindowGenerate)
 
         #Register fields
-        self.registerFrame = Frame(self.win)
+        self.registerFrame = Frame(self.win, width=375, height=650, background="#3b3b3b")
+        self.registerFrame.pack_propagate(0)
 
-        self.registerLabelTitle = Label(self.registerFrame, text="Please enter login details")
+        self.registerLabelTitle = Label(self.registerFrame, text="Enter details to Register Account", background="#3b3b3b", foreground="#ffffff", font=('Colibri', 15))
 
-        self.registerLabelSpace1 = Label(self.registerFrame, text="")
+        self.registerLabelSpace1 = Label(self.registerFrame, text="", background="#3b3b3b", foreground="#ffffff")
 
-        self.registerLabelUsername = Label(self.registerFrame, text="Username")
+        self.registerLabelUsername = Label(self.registerFrame, text="Username",background="#3b3b3b", foreground="#ffffff", font=('Colibri', 13))
 
-        self.registerUsernameEntry = Entry(self.registerFrame, textvariable="username")
+        self.registerUsernameEntry = Entry(self.registerFrame, textvariable="username", background="#3b3b3b", foreground="#ffffff")
 
-        self.registerLabelSpace2 = Label(self.registerFrame, text="")
+        self.registerLabelSpace2 = Label(self.registerFrame, text="", background="#3b3b3b", foreground="#ffffff")
 
-        self.registerLabelPassword = Label(self.registerFrame, text="Password")
+        self.registerLabelEmail = Label(self.registerFrame, text="Email",background="#3b3b3b", foreground="#ffffff", font=('Colibri', 13))
 
-        self.registerPasswordEntry = Entry(self.registerFrame, textvariable="password", show= '*')
+        self.registerEmailEntry = Entry(self.registerFrame, textvariable="email",background="#3b3b3b", foreground="#ffffff")
 
-        self.registerLabelSpace3 = Label(self.registerFrame, text="")
+        self.registerLabelSpace3 = Label(self.registerFrame, text="", background="#3b3b3b", foreground="#ffffff")
 
-        self.registerButtonValidate = Button(self.registerFrame, text="Register", width=10, height=1, command = self.LoginReturn)
-        self.registerButtonLogin = Button(self.registerFrame, text="Login", width=10, height=1, command = self.LoginWindowGenerate)
+        self.registerLabelPassword = Label(self.registerFrame, text="Password", background="#3b3b3b", foreground="#ffffff", font=('Colibri', 13))
+
+        self.registerPasswordEntry = Entry(self.registerFrame, textvariable="password", show= '*', background="#3b3b3b", foreground="#ffffff")
+
+        self.registerLabelSpace4 = Label(self.registerFrame, text="", background="#3b3b3b", foreground="#ffffff")
+
+        self.registerButtonValidate = Button(self.registerFrame, text="Register", width=10, height=1, command = self.RegisterValidate, background="#3b3b3b", foreground="#ffffff")
+        self.registerButtonLogin = Button(self.registerFrame, text="Login", width=10, height=1, command = self.LoginWindowGenerate, background="#3b3b3b", foreground="#ffffff")
 
         #No Conntection
         self.nologinFrame = Frame(self.win, width=375, height=155, background="#3b3b3b")
@@ -141,9 +149,12 @@ class LoginWindow:
         self.registerLabelUsername.pack()
         self.registerUsernameEntry.pack()
         self.registerLabelSpace2.pack()
+        self.registerLabelEmail.pack()
+        self.registerEmailEntry.pack()
+        self.registerLabelSpace3.pack()
         self.registerLabelPassword.pack()
         self.registerPasswordEntry.pack()
-        self.registerLabelSpace3.pack()
+        self.registerLabelSpace4.pack()
         self.registerButtonValidate.pack()
         self.registerButtonLogin.pack()
     def NoConnection(self):
@@ -152,7 +163,6 @@ class LoginWindow:
         self.ConnectionLabel.pack()
     def LoginValidate(self):
         from tkinter import messagebox
-        global isLoged
         login = self.loginUsernameEntry.get()
         passw = self.loginPasswordEntry.get()
 
@@ -172,10 +182,49 @@ class LoginWindow:
                 UserID   = dbresult[2]
 
                 if Login == login and Passw == passw:
-                    self.Login = Login
-                    self.Passw = Passw
-                    self.UserID = UserID
+                    self.Login   = Login
+                    self.Passw   = Passw
+                    self.UserID  = UserID
                     self.IsLoged = True
                     self.Canvas.pack_forget()
+                else:
+                    messagebox.showerror("Error","Wrong Password!")
             except:
-                messagebox.showerror("Error","Wrong username or/and password!")
+                messagebox.showerror("Error","User doesn't exist!")
+    def RegisterValidate(self):
+        from tkinter import messagebox
+        login = self.registerUsernameEntry.get()
+        passw = self.registerPasswordEntry.get()
+        email = self.registerEmailEntry.get()
+
+        if login == "" and passw == "" and email == "":
+            messagebox.showerror("Error","No Data Entered!")
+        elif login == "":
+            messagebox.showerror("Error","Enter Username!")
+        elif email == "":
+            messagebox.showerror("Error","Enter Your Email!")
+        elif passw == "":
+            messagebox.showerror("Error","Enter Password!")
+        else:
+            self.dbcursor.execute("SELECT Login, Passw, UserID FROM user WHERE Login = '%s'" % (login))
+            if len(self.dbcursor.fetchall()) != 0:
+                messagebox.showerror("Error","Account with that username already exists!")
+            else:
+                if len(passw) < 8:
+                    messagebox.showerror("Error","Password should have at least 8 characters")
+                elif len(passw) > 20:
+                    messagebox.showerror("Error","Password should not be longer than 20 characters")
+                elif not any(char.isdigit() for char in passw) and not any(char.islower() for char in passw) and not any(char.isupper() for char in passw):
+                    messagebox.showerror("Error","Password should have at least one digit, Lower and Upper character")
+                else:
+                    self.dbcursor.execute("INSERT INTO `user` (`UserID`, `Login`, `Passw`, `Email`) VALUES (NULL, '%s', '%s', '%s')" % (login, passw, email))
+                    self.mydb.commit()
+                    self.dbcursor.execute("SELECT Login, Passw, UserID FROM user WHERE Login = '%s'" % (login))
+                    result = self.dbcursor.fetchone()
+                    self.dbcursor.execute("INSERT INTO `account` (`AccountID`, `Title`, `Money`, `Description`, `Type`, `Goal`, `StocksLine`, `UserID`) VALUES (NULL, 'First Account', '0', 'Your first account!', 1, 'null','null','%s')" % (result[2]))
+                    self.mydb.commit()
+                    self.Login   = result[0]
+                    self.Passw   = result[1]
+                    self.UserID  = result[2]
+                    self.IsLoged = True
+                    self.Canvas.pack_forget()

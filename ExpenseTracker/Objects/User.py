@@ -14,3 +14,15 @@ class User:
         for x in dbresult:
             newAccount = Account(x[0], x[1], x[2], x[3], self.DBcursor, self.mydb)
             self.Accounts.append(newAccount)
+    def UpdateAccounts(self):
+        self.Accounts.clear()
+        self.DBcursor.execute('SELECT Title, Money, Description, AccountID, Type, Goal, StocksLine FROM account INNER JOIN user ON account.UserID = user.UserID WHERE user.UserID = \'%s\';' % (self.UserID))
+        dbresult = self.DBcursor.fetchall()
+        for x in dbresult:
+            if x[4] == 1:
+                newAccount = Account(x[0], x[1], x[2], x[3], self.DBcursor, self.mydb)
+            elif x[4] == 2:
+                newAccount = SavingsAccount(x[0], x[1], x[2], x[3], x[5], self.DBcursor, self.mydb)
+            elif x[4] == 3:
+                newAccount = StockAccount(x[0], x[1], x[2], x[3], self.DBcursor, self.mydb, x[6])
+            self.Accounts.append(newAccount)
