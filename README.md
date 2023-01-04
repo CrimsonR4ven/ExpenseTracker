@@ -11,3 +11,4 @@ pip install Pillow
 ```
 
 Start file: "ExpenseTracker.py"
+To access transaction window and account destruction click on account's square on main page
