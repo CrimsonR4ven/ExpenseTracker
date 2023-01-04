@@ -79,7 +79,7 @@ class AppWindow:
         self.TitleAccount          = Label( self.AccountMenuScrollableFrame,background="#3b3b3b", foreground="#ffffff", font=('Colibri', 13))
         self.DescAccount           = Label( self.AccountMenuScrollableFrame,background="#3b3b3b", foreground="#ffffff", font=('Colibri', 13))
         self.BalanceAccount        = Label( self.AccountMenuScrollableFrame,background="#3b3b3b", foreground="#ffffff", font=('Colibri', 13))
-        self.HistoryButtonAccount  = Button(self.AccountMenuScrollableFrame, text="History",         width=10,    height=1,                background="#3b3b3b", foreground="#ffffff", command = self.BackToMainWindow)
+        self.HistoryButtonAccount  = Button(self.AccountMenuScrollableFrame, text="go back",         width=10,    height=1,                background="#3b3b3b", foreground="#ffffff", command = lambda : self.BackToMainWindow(self.AccountMenuWindow))
         self.NewTransactionButton  = Button(self.AccountMenuScrollableFrame, text="New Transaction",         width=10,    height=1,                background="#3b3b3b", foreground="#ffffff", command = self.CreateAccount)
         self.DeleteButtonAccount   = Button(self.AccountMenuScrollableFrame, text="Delete Account",         width=10,    height=1,                background="#3b3b3b", foreground="#ffffff", command = self.AccountDelete)
         
@@ -209,11 +209,10 @@ class AppWindow:
         self.mainScreenCanvas.delete(self.mainScreenWindow)
         self.AccountMenuWindow = self.mainScreenCanvas.create_window((0, 0), window=self.AccountMenuScrollableFrame, anchor="nw")
         self.NewTransactionButton.config(command= lambda a=account:self.AccountNewTransaction(a))
-        self.NewTransactionButton.pack() 
-        self.HistoryButtonAccount.config(command= lambda a=account:self.AccountHistory(a))
-        self.HistoryButtonAccount.pack()
+        self.NewTransactionButton.pack()
         self.DeleteButtonAccount.config(command= lambda a=account:self.AccountDeleteTopLevel(a))
         self.DeleteButtonAccount.pack()
+        self.HistoryButtonAccount.pack()
         print("funny ah " + account.Title)
         pass
 
@@ -222,14 +221,35 @@ class AppWindow:
 
     def AccountNewTransaction(self,account):
         self.TopLevelNewTransaction     = Toplevel(self.win)
-        self.BoxTransactionTypeInternal = Frame( self.CreateAccountScrollableFrame, width=300, height=50, background="#b3b3b3")
-        self.BoxTransactionTypeExternal = Frame( self.CreateAccountScrollableFrame, width=300, height=50, background="#b3b3b3")
-        self.TitleTransactionEntry      = Entry( self.CreateAccountScrollableFrame, highlightthickness=1,  relief=FLAT, textvariable="Transaction Title", background="#3b3b3b", foreground="#ffffff")
-        self.AmountTransactionEntry     = Entry( self.CreateAccountScrollableFrame, highlightthickness=1,  relief=FLAT, textvariable="Transaction Amount", background="#3b3b3b", foreground="#ffffff")
-        self.GoalEntry             = Entry( self.CreateAccountScrollableFrame, highlightthickness=1,  relief=FLAT, textvariable="Account goal", background="#3b3b3b", foreground="#ffffff")
-        self.CancelButtonCreation  = Button(self.CreateAccountScrollableFrame, text="cancel",         width=10,    height=1,                background="#3b3b3b", foreground="#ffffff", command = lambda: self.BackToMainWindow(self.CreateAccountWindow))
-        self.CreateButtonCreation  = Button(self.CreateAccountScrollableFrame, text="create",         width=10,    height=1,                background="#3b3b3b", foreground="#ffffff", command = self.CreateAccount)
+        self.type = 1
+        self.TopLevelNewTransaction.geometry("600x500")
+        self.BoxTransactionTypeExternal = Frame( self.TopLevelNewTransaction , width=300, height=50, background="#ff2b05")
+        self.BoxTransactionTypeExternal.pack_propagate(0)
+        self.BoxTransactionTypeInternal = Frame( self.TopLevelNewTransaction , width=300, height=50, background="#b3b3b3")
+        self.BoxTransactionTypeInternal.pack_propagate(0)
+        self.BoxTransactionTypeIncome = Frame( self.TopLevelNewTransaction , width=300, height=50, background="#ff2b05")
+        self.BoxTransactionTypeIncome.pack_propagate(0)
+        self.BoxTransactionTypePayment = Frame( self.TopLevelNewTransaction , width=300, height=50, background="#b3b3b3")
+        self.BoxTransactionTypePayment.pack_propagate(0)
+        self.TypeLabelExternal      = Label( self.BoxTransactionTypeExternal,       text = "External",      font = ('Colibri',13),background="#ff2b05")
+        self.TypeLabelInternal      = Label( self.BoxTransactionTypeInternal,       text = "Internal",      font = ('Colibri',13),background="#b3b3b3")
+        self.TypeLabelIncome        = Label( self.BoxTransactionTypeIncome,         text = "Income",        font = ('Colibri',13),background="#ff2b05")
+        self.TypeLabelPayment       = Label( self.BoxTransactionTypePayment,        text = "Payment",       font = ('Colibri',13),background="#b3b3b3")
+        self.TitleTransactionEntry  = Entry( self.TopLevelNewTransaction, highlightthickness=1,  relief=FLAT, textvariable="Transaction Title", background="#3b3b3b", foreground="#ffffff")
+        self.AmountTransactionEntry = Entry( self.TopLevelNewTransaction, highlightthickness=1,  relief=FLAT, textvariable="Transaction Amount", background="#3b3b3b", foreground="#ffffff")
+        self.TransactionButton      = Button(self.TopLevelNewTransaction, text="Create Transaction",         width=10,    height=1,                background="#3b3b3b", foreground="#ffffff", command = lambda: self.FinalizeTransaction(account))
 
+        self.BoxTransactionTypeExternal.place(x=0,  y=0)
+        self.BoxTransactionTypeInternal.place(x=300,y=0)
+        self.BoxTransactionTypeIncome.place(  x=0,  y=50)
+        self.BoxTransactionTypePayment.place( x=300,y=50)
+        self.TypeLabelExternal.pack()
+        self.TypeLabelInternal.pack()
+        self.TypeLabelIncome.pack()
+        self.TypeLabelPayment.pack()
+        self.TitleTransactionEntry.place(x=225,y=120)
+        self.AmountTransactionEntry.place(x=225,y=150)
+        self.TransactionButton.place(x=250,y=180)
         
 
     def AccountDeleteTopLevel(self,account):
@@ -252,17 +272,22 @@ class AppWindow:
         self.TopLevelDelete.update()
         self.BackToMainWindow(self.AccountMenuWindow)
 
-    def __FinalizeTransaction(self, account):
+    def FinalizeTransaction(self, account):
         from tkinter import messagebox
         if not all(char.isdigit() for char in self.AmountTransactionEntry.get()):
             messagebox.showerror("Error", "Amount needs to be a number!")
         else:
             self.transaction = Objects.Transaction(self.TitleTransactionEntry.get(), self.AmountTransactionEntry.get())
-            if self.isPayment == True:
-                self.account.Money = self.account.Money - self.transaction.Amount
-                self.account.UpdateAccount()
-            else:
-                self.account.Money = self.account.Money + self.transaction.Amount
-                self.account.UpdateAccount()
-            self.dbcursor.execute("INSERT INTO transaction (Title, Amount, DateOfTransaction, AccountID) VALUES ('%s', '%s', '%s', '%s')" % (self.transaction.Title, self.transaction.Amount, self.transaction.TimeFormat, self.account.AccountID))
+            if self.type == 1:
+                account.Money = account.Money + self.transaction.Amount
+                account.UpdateAccount()
+            elif self.type == 2:
+                account.Money = account.Money - self.transaction.Amount
+                account.UpdateAccount()
+            elif self.type == 3:
+                account.Money = account.Money - self.transaction.Amount
+                account2.Money = account2.Money + self.transaction.Amount
+                account.UpdateAccount()
+                account2.UpdateAccount()
+            self.dbcursor.execute("INSERT INTO transaction (Title, Amount, DateOfTransaction, AccountID) VALUES ('%s', '%s', '%s', '%s')" % (self.transaction.Title , self.transaction.Amount, self.transaction.TimeFormat, account.AccountID))
             self.mydb.commit()
